@@ -17,7 +17,10 @@ class DefaultController extends Controller
     }
     
     public function pruebasAction() {
-        echo "Hola Mundo con Symfony 3!";
+        $em = $this->getDoctrine()->getManager();
+        $userRepo = $em->getRepository('BackendBundle:User');
+        $users = $userRepo->findAll();
+        var_dump($users);
         die();
     }
 }
