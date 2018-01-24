@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Constraints as Assert;
 use AppBundle\Services\Helpers;
+use AppBundle\Services\JwtAuth;
 
 class DefaultController extends Controller
 {
@@ -45,9 +46,15 @@ class DefaultController extends Controller
             $validate_email = $this->get("validator")->validate($email, $emailConstraint);
             
             if(count($validate_email) == 0 && $password != null){
+                
+                $jwt_auth = $this->get(JwtAuth::class);
+                
+                $signup = $jwt_auth->signup($email,$password);
+                
                 $data = array(
                     'status' => 'success',
-                    'data' => 'Login exitoso'
+                    'data' => 'Login exitoso',
+                    'signup' => $signup
                 );
             }else{
                 $data = array(
