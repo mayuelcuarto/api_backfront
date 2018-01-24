@@ -40,6 +40,7 @@ class DefaultController extends Controller
             
             $email = (isset($params->email)) ? $params->email : null;
             $password = (isset($params->password)) ? $params->password : null;
+            $getHash = (isset($params->getHash)) ? $params->getHash : null;
             
             $emailConstraint = new Assert\Email();
             $emailConstraint->message = "Este email no es válido";
@@ -49,17 +50,17 @@ class DefaultController extends Controller
                 
                 $jwt_auth = $this->get(JwtAuth::class);
                 
-                $signup = $jwt_auth->signup($email,$password);
+                if($getHash == null || $getHash == false){
+                    $signup = $jwt_auth->signup($email,$password);
+                }else{
+                    $signup = $jwt_auth->signup($email,$password,true);
+                }
                 
-                $data = array(
-                    'status' => 'success',
-                    'data' => 'Login exitoso',
-                    'signup' => $signup
-                );
+                return $this->json($signup);
             }else{
                 $data = array(
                     'status' => 'success',
-                    'data' => 'Email o Password incorrecto'
+                    'data'   => 'Email o Password incorrecto'
                 );
             }    
         }
