@@ -59,7 +59,7 @@ class DefaultController extends Controller
                 return $this->json($signup);
             }else{
                 $data = array(
-                    'status' => 'success',
+                    'status' => 'Success',
                     'data'   => 'Email o Password incorrecto'
                 );
             }    
@@ -67,16 +67,28 @@ class DefaultController extends Controller
         return $helpers->json($data) ;
     }
     
-    public function pruebasAction() {
-        $em = $this->getDoctrine()->getManager();
-        $userRepo = $em->getRepository('BackendBundle:User');
-        $users = $userRepo->findAll();
-        
+    public function pruebasAction(Request $request) {
         $helpers = $this->get(Helpers::class);
-        return $helpers->json(array(
-                'status' => 'Success',
-                'users' => $users
-                ));
+        $jwt_auth = $this->get(JwtAuth::class);
+        $token = $request->get('authorization',null);
+        
+        if($token && $jwt_auth->checkToken($token) == true){
+            $em = $this->getDoctrine()->getManager();
+            $userRepo = $em->getRepository('BackendBundle:User');
+            $users = $userRepo->findAll();
+
+            return $helpers->json(array(
+                    'status' => 'Success',
+                    'users'  => $users
+                    ));
+        }else{
+            return $helpers->json(array(
+                    'status' => 'Error',
+                    'code'   => 400,
+                    'users'  => 'Autorización no válida'
+                    ));
+        }
+        
         /*
         die();
         

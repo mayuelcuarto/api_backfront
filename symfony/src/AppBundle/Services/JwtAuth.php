@@ -45,12 +45,35 @@ class JwtAuth{
             }          
         }else{
             $data = array(
-                "status" => 'error',
+                "status" => 'Error',
                 "user"   => 'Login fallido'
                 );
         }
         
         return $data;
     }
+    
+    public function checkToken($jwt,$getIdentity = false){
+        $auth = false;
+        
+        try{
+            $decoded = JWT::decode($jwt, $this->key, array('HS256'));
+        }catch(\UnexpectedValueException $e){
+            $auth = false;
+        }catch (\DomainException $e){
+            $auth = false;
+        }
+        
+        if(isset($decoded) && is_object($decoded) && isset($decoded->sub)){
+            $auth = true;
+        }else{
+            $auth = false;
+        }
+        
+        if($getIdentity == false){
+            return $auth;
+        }else{
+            return $decoded;
+        }
+    }
 }
-
