@@ -42,6 +42,11 @@ class UserController extends Controller{
                 $user->setName($name);
                 $user->setSurname($surname);
                 
+                //Cifrar password
+                $pwd = hash('sha256', $password);
+                
+                $user->setPassword($pwd);
+                
                 $em = $this->getDoctrine()->getManager();
                 $isset_user = $em->getRepository('BackendBundle:User')->findBy(array(
                     "email" => $email
@@ -113,12 +118,18 @@ class UserController extends Controller{
                 $emailConstraint->message = "Este email no es válido!!";
                 $validate_email = $this->get("validator")->validate($email, $emailConstraint);
 
-                if($email != null && count($validate_email) == 0 && $password != null && $name != null & $surname != null){
+                if($email != null && count($validate_email) == 0 && $name != null & $surname != null){
                     //$user->setCreatedAt($createdAt);
                     $user->setRole($role);
                     $user->setEmail($email);
                     $user->setName($name);
                     $user->setSurname($surname);
+                    
+                    //Cifrar password
+                    if($password != null){
+                    $pwd = hash('sha256', $password);
+                    $user->setPassword($pwd);
+                    }
                     
                     $isset_user = $em->getRepository('BackendBundle:User')->findBy(array(
                         "email" => $email
