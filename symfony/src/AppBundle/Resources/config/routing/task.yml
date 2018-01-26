@@ -17,3 +17,8 @@ task_detail:
     path: /detail/{id}
     defaults: { _controller: "AppBundle:Task:task", id:null }
     methods: POST
+    
+task_search:
+    path: /search/{search}
+    defaults: { _controller: "AppBundle:Task:search", search:null }
+    methods: POST

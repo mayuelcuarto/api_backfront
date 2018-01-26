@@ -183,4 +183,80 @@ class TaskController extends Controller{
         }
         return $helpers->json($data);
     }
+    
+    public function searchAction(Request $request, $search = null){
+        $helpers = $this->get(Helpers::class);
+        $jwt_auth = $this->get(JwtAuth::class);
+        
+        $token = $request->get('authorization',null);
+        $authCheck = $jwt_auth->checkToken($token);
+        
+        if($authCheck==true){
+            $identity = $jwt_auth->checkToken($token, true);
+            
+            $em = $this->getDoctrine()->getManager();
+            
+            //Filtro
+            $filter = $request->get('filter', null);
+            if(empty($filter)){
+                $filter = null;
+            }elseif($filter == 1){
+                $filter = "new";
+            }elseif($filter == 2){
+                $filter = "todo";
+            }else{
+                $filter = "finished";
+            }
+            
+            //Orden
+            $order = $request->get('order', null);
+            if(empty($order) || $order == 2){
+                $order = "DESC";
+            }else{
+                $order = "ASC";
+            }
+            
+            //Búsqueda
+            if($search != null){
+                $dql = "SELECT t FROM BackendBundle:Task t"
+                     . " WHERE t.user = $identity->sub AND"
+                     . " (t.title LIKE :search OR t.description LIKE :search)";  
+            }else{
+                $dql = " SELECT t FROM BackendBundle:Task t"
+                     . " WHERE t.user = $identity->sub";
+            }
+            
+            //Set filter
+            if($filter != null){
+                    $dql .= " AND t.status = :filter";
+                }
+            
+            //Set order
+            $dql .= " ORDER BY t.id $order";
+            
+            $query = $em->createQuery($dql);
+            if($filter != null){
+                    $query->setParameter('filter', "$filter");
+            }
+            if(!empty($search)){
+                $query->setParameter('search', "%$search%");
+            }
+            
+            $tasks = $query->getResult();
+            
+            $data = array(
+                "status" => "Success",
+                "code" => 200,
+                "data" => $tasks
+            );
+            
+        }else{
+            $data = array(
+                "status" => "Error",
+                "code" => 400,
+                "msg" => "Autorización no Válida!!"
+            );
+        }
+        return $helpers->json($data);
+    }
 }
