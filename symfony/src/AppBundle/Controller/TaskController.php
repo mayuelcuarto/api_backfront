@@ -259,4 +259,45 @@ class TaskController extends Controller{
         }
         return $helpers->json($data);
     }
+    
+    public function removeAction(Request $request, $id = null){
+        $helpers = $this->get(Helpers::class);
+        $jwt_auth = $this->get(JwtAuth::class);
+        
+        $token = $request->get('authorization',null);
+        $authCheck = $jwt_auth->checkToken($token);
+        
+        if($authCheck==true){
+            $identity = $jwt_auth->checkToken($token, true);
+            $em = $this->getDoctrine()->getManager();
+            $task = $em->getRepository('BackendBundle:Task')->findOneBy(array(
+                "id" => $id
+            ));
+            
+            if($task && is_object($task) && $identity->sub == $task->getUser()->getId()){
+                //Borrar objeto y borrar registro de la tabla bbdd
+                $em->remove($task);
+                $em->flush();
+                
+                $data = array(
+                "status" => "Success",
+                "code" => 200,
+                "data" => $task
+                );
+            }else{
+                $data = array(
+                "status" => "Error",
+                "code" => 404,
+                "msg" => "Tarea no encontrada!!"
+                );
+            }  
+        }else{
+            $data = array(
+                "status" => "Error",
+                "code" => 400,
+                "msg" => "Autorización no Válida!!"
+            );
+        }
+        return $helpers->json($data);
+    }
 }
