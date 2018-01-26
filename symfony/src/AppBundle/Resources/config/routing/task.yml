@@ -7,3 +7,8 @@ task_edit:
     path: /edit/{id}
     defaults: { _controller: "AppBundle:Task:new", id:null }
     methods: POST
+    
+task_list:
+    path: /list
+    defaults: { _controller: "AppBundle:Task:tasks"}
+    methods: POST
