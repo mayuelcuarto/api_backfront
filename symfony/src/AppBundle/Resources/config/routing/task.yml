@@ -1,0 +1,4 @@
+task_new:
+    path: /new
+    defaults: { _controller: "AppBundle:Task:new" }
+    methods: POST
