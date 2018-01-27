@@ -12,3 +12,9 @@ default_pruebas:
     path: /pruebas
     defaults: { _controller: "AppBundle:Default:pruebas" }
     methods: POST
+
+default_usuario:
+    path: /usuario/{id}
+    defaults: { _controller: "AppBundle:Default:usuario", id:null }
+    methods: POST
+

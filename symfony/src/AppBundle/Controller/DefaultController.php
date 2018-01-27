@@ -100,4 +100,29 @@ class DefaultController extends Controller
          * 
          */
     }
+
+	public function usuarioAction(Request $request, $id = null) {
+        $helpers = $this->get(Helpers::class);
+        $jwt_auth = $this->get(JwtAuth::class);
+        $token = $request->get('authorization',null);
+        
+        if($token && $jwt_auth->checkToken($token) == true){
+            $em = $this->getDoctrine()->getManager();
+            $userRepo = $em->getRepository('BackendBundle:User');
+            $user = $userRepo->findOneBy(array(
+		"id" => $id
+));
+
+            return $helpers->json(array(
+                    'status' => 'Success',
+                    'user'  => $user
+                    ));
+        }else{
+            return $helpers->json(array(
+                    'status' => 'Error',
+                    'code'   => 400,
+                    'users'  => 'Autorización no válida'
+                    ));
+        }
+      }
 }
