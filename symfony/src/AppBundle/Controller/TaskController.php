@@ -118,7 +118,7 @@ class TaskController extends Controller{
             $identity = $jwt_auth->checkToken($token, true);
             $em = $this->getDoctrine()->getManager();
             
-            $dql = "SELECT t FROM BackendBundle:Task t ORDER BY t.id DESC";
+            $dql = "SELECT t FROM BackendBundle:Task t WHERE t.user = {$identity->sub} ORDER BY t.id DESC";
             $query = $em->createQuery($dql);
             
             $page = $request->query->getInt('page', 1);
@@ -129,7 +129,7 @@ class TaskController extends Controller{
             $total_items_count = $pagination->getTotalItemCount();
             
             $data = array(
-                "status" => "Succes",
+                "status" => "Success",
                 "code" => 200,
                 "total_items_count" => $total_items_count,
                 "page_actual" => $page,

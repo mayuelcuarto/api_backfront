@@ -26,7 +26,7 @@ class DefaultController extends Controller
         
         //Array a devolver por defecto
         $data = array(
-            'status' => 'error',
+            'status' => 'Error',
             'data' => 'Send json via POST'
         );
         
@@ -60,7 +60,7 @@ class DefaultController extends Controller
                 return $this->json($signup);
             }else{
                 $data = array(
-                    'status' => 'Success',
+                    'status' => 'Error',
                     'data'   => 'Email o Password incorrecto'
                 );
             }    
